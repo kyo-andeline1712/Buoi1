@@ -1,32 +1,66 @@
-<?php
-function tinh_phep_tinh($pheptinh, $so1, $so2) {
-    switch ($pheptinh) {
-        case 'cong':
-            return $so1 + $so2;
-        case 'tru':
-            return $so1 - $so2;
-        case 'nhan':
-            return $so1 * $so2;
-        case 'chia':
-            if ($so2 != 0) {
-                return $so1 / $so2;
-            } else {
-                return "Không thể chia cho 0.";
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Kết Quả</title>
+    <link rel="stylesheet" href="bai2.css">
+</head>
+
+<body>
+    <?php
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $firstName = trim($_POST['first_name']);
+        $lastName = trim($_POST['last_name']);
+        $email = trim($_POST['email_address']);
+        $invoidID = trim($_POST['invoice_id']);
+        $payFor = isset($_POST['payment_options']) ? $_POST['payment_options'] : [];
+
+        $errors = [];
+
+        if (empty($firstName)) {
+            $errors[] = "Không được để trống First Name.";
+        }
+
+        if (empty($lastName)) {
+            $errors[] = "Không được để trống Last Name.";
+        }
+
+        if (empty($email)) {
+            $errors[] = "Không được để trống Email.";
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = "Email không đúng định dạng.";
+        }
+
+        if (empty($invoidID)) {
+            $errors[] = "Không được để trống Invoice ID.";
+        } elseif (!is_numeric($invoidID)) {
+            $errors[] = "Invoice ID phải là số.";
+        }
+
+        if (empty($payFor)) {
+            $errors[] = "Vui lòng chọn ít nhất một tùy chọn cho Pay For.";
+        }
+
+        if (!empty($errors)) {
+            echo "<div class='errors'><h2>Errors</h2><ul>";
+            foreach ($errors as $error) {
+                echo "<li>" . htmlspecialchars($error) . "</li>";
             }
-        default:
-            return "Phép tính không hợp lệ.";
+            echo "</ul></div>";
+            echo "<button onclick='window.history.back()'>Quay lại</button>";
+        } else {
+            echo "<div class='result'><h2>Kết quả Form nhập</h2>";
+            echo "<p><strong>First Name:</strong> " . htmlspecialchars($firstName) . "</p>";
+            echo "<p><strong>Last Name:</strong> " . htmlspecialchars($lastName) . "</p>";
+            echo "<p><strong>Email:</strong> " . htmlspecialchars($email) . "</p>";
+            echo "<p><strong>Invoice ID:</strong> " . htmlspecialchars($invoidID) . "</p>";
+            echo "<p><strong>Pay For:</strong> " . htmlspecialchars(implode(', ', $payFor)) . "</p>";
+            echo "</div>";
+        }
     }
-}
+    ?>
+</body>
 
-function kiem_tra_chan_le($so) {
-    return ($so % 2 == 0) ? "$so là số chẵn." : "$so là số lẻ.";
-}
-
-function kiem_tra_nguyen_to($so) {
-    if ($so < 2) return "$so không phải là số nguyên tố.";
-    for ($i = 2; $i <= sqrt($so); $i++) {
-        if ($so % $i == 0) return "$so không phải là số nguyên tố.";
-    }
-    return "$so là số nguyên tố.";
-}
-?>
+</html>
